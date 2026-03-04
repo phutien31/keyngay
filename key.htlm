@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SONTDS Key Ngày</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: #121a33;
+      --text: #e6ecff;
+      --muted: #a8b3d1;
+      --ok: #20c997;
+      --err: #ff6b6b;
+      --btn: #4e73df;
+      --btn-h: #3e5fbe;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top, #1a2450 0%, var(--bg) 60%);
+      color: var(--text);
+      padding: 20px;
+    }
+    .card {
+      width: 100%;
+      max-width: 560px;
+      background: linear-gradient(180deg, #172144 0%, var(--card) 100%);
+      border: 1px solid #2b3b6f;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 16px 34px rgba(0,0,0,.35);
+    }
+    h1 { margin: 0 0 10px; font-size: 30px; }
+    .sub { color: var(--muted); margin-bottom: 18px; }
+    .row { color: var(--muted); margin-bottom: 12px; }
+    .key {
+      margin-top: 14px;
+      border: 1px dashed #4b66c8;
+      border-radius: 12px;
+      background: #0f1736;
+      padding: 16px;
+      text-align: center;
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      user-select: all;
+    }
+    .status { font-weight: 700; margin: 8px 0; }
+    .ok { color: var(--ok); }
+    .err { color: var(--err); }
+    button {
+      margin-top: 14px;
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      background: var(--btn);
+      color: white;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button:hover { background: var(--btn-h); }
+    .footer { margin-top: 14px; color: var(--muted); font-size: 13px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>SONTDS KEY NGÀY</h1>
+    <div class="sub">Lấy key để nhập vào tool.</div>
+
+    <div class="row">Ngày hôm nay: <strong id="today"></strong> (GMT+7)</div>
+
+    <div id="okBox" style="display:none;">
+      <div class="status ok">Vượt link thành công. Key hôm nay:</div>
+      <div id="keyBox" class="key"></div>
+      <button onclick="copyKey()">Copy Key</button>
+    </div>
+
+    <div id="errorBox" style="display:none;">
+      <div class="status err" id="errorText"></div>
+    </div>
+
+    <div class="footer">Key tự đổi mỗi ngày.</div>
+  </div>
+
+  <script>
+    function getVNDate() {
+      const now = new Date();
+      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+      return new Date(utc + 7 * 3600000);
+    }
+
+    function formatDateVN(d) {
+      const dd = String(d.getDate()).padStart(2, '0');
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const yyyy = d.getFullYear();
+      return `${dd}/${mm}/${yyyy}`;
+    }
+
+    document.getElementById('today').textContent = formatDateVN(getVNDate());
+
+    const params = new URLSearchParams(window.location.search);
+    const key = (params.get('key') || '').trim();
+
+    const okBox = document.getElementById('okBox');
+    const errorBox = document.getElementById('errorBox');
+    const errorText = document.getElementById('errorText');
+
+    if (!key) {
+      errorBox.style.display = 'block';
+      errorText.textContent = 'Thiếu key trên URL. Vui lòng vượt link để lấy key.';
+    } else {
+      okBox.style.display = 'block';
+      document.getElementById('keyBox').textContent = key;
+    }
+
+    function copyKey() {
+      const text = document.getElementById('keyBox').textContent.trim();
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Đã copy key: ' + text);
+      }).catch(() => {
+        alert('Không copy tự động được. Bạn copy thủ công nhé.');
+      });
+    }
+  </script>
+</body>
+</html>
